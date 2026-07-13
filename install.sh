@@ -3,9 +3,9 @@
 echo "=========================================="
 echo "Updating and installing packages ...."
 echo "=========================================="
-# 1. Update and Install
 apt update && apt upgrade -y
-pkg install nodejs tmux wget proot fastfetch mariadb -y # Added mariadb explicitly since you use it
+pkg install nodejs tmux wget proot fastfetch mariadb -y 
+
 cat << 'EOF' > /data/data/com.termux/files/usr/etc/bash.bashrc
 clear
 fastfetch
@@ -14,17 +14,13 @@ EOF
 echo "=========================================="
 echo "--- Setup Server Directory ---"
 echo "=========================================="
-# 2. Setup Server Directory (Relative to working directory)
 mkdir -p public
-
 
 echo "=========================================="
 echo "Initialize Node.js and Install Dependencies ......"
 echo "=========================================="
-# 3. Initialize Node.js and Install Dependencies
 npm init -y
 npm i express mysql2 dotenv -y
-
 
 # --- Password Setup Prompt ---
 echo "=========================================="
@@ -41,9 +37,44 @@ ADMIN_PASSWORD="$ADMIN_PASS"
 EOF
 
 echo "=========================================="
+echo "Initializing MariaDB & Creating Schema ...."
+echo "=========================================="
+# Initialize MariaDB data directories if they don't exist
+mysql_install_db
+
+# Boot up database daemon temporarily in background to apply password & schema configurations
+mysqld_safe --datadir=${IS_AM_NOT_ROOT:+$PREFIX/var/lib/mysql} 2>&1 >/dev/null &
+PID=$!
+sleep 4
+
+# Secure root password and build the necessary table architecture layout automatically
+mysql -u root <<EOSQL
+ALTER USER 'root'@'localhost' IDENTIFIED BY '$DB_PASS';
+CREATE DATABASE IF NOT EXISTS friends_talk;
+USE friends_talk;
+
+CREATE TABLE IF NOT EXISTS users (
+  username VARCHAR(50) PRIMARY KEY,
+  status VARCHAR(20) DEFAULT 'offline',
+  last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS chat_logs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(50),
+  message TEXT,
+  timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+FLUSH PRIVILEGES;
+EOSQL
+
+# Kill the temporary background SQL process gracefully
+kill $PID
+sleep 2
+
+echo "=========================================="
 echo "Creating server.js (Secure Routing) ....."
 echo "=========================================="
-# 4. Create server.js (Secure Routing)
 cat << 'EOF' > server.js
 require('dotenv').config();
 const express = require('express');
@@ -54,7 +85,6 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// --- Secure MariaDB Connection ---
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',                  
@@ -67,7 +97,6 @@ db.connect((err) => {
   else console.log("Connected seamlessly to Termux MariaDB!");
 });
 
-// Middleware to authenticate admin requests natively
 const validateAdmin = (req, res, next) => {
   const token = req.headers['x-admin-auth'] || req.body.password;
   if (token === process.env.ADMIN_PASSWORD) {
@@ -77,12 +106,10 @@ const validateAdmin = (req, res, next) => {
   }
 };
 
-// --- Secure Endpoint: Returns admin.html securely ---
 app.post('/verify-admin', validateAdmin, (req, res) => {
   res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
-// --- Secured Actions behind authentication middleware ---
 app.post('/clear-chats', (req, res) => {
   if (req.headers['x-admin-auth'] !== process.env.ADMIN_PASSWORD) return res.status(403).send("Unauthorized");
   const query = "DELETE FROM chat_logs";
@@ -150,9 +177,8 @@ app.listen(3000, () => {
 });
 EOF
 
-
 echo "=========================================="
-echo "Creating frontend codes(index.html) ...."
+echo "Creating frontend codes (index.html) ...."
 echo "=========================================="
 cat << 'EOF' > public/index.html
 <!DOCTYPE html>
@@ -204,12 +230,10 @@ cat << 'EOF' > public/index.html
 </html>
 EOF
 
-
 echo "=========================================="
 echo "Creating f-t.css ...."
 echo "=========================================="
 cat << 'EOF' > public/f-t.css
-/* Combined Core Styles */
 body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #fcfcfc; color: #333; margin: 20px; font-size: 23px; }
 h1, h2, h3 { color: #2c3e50; text-align: center; }
 button { padding: 8px 15px; background-color: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
@@ -235,13 +259,11 @@ button:hover { background-color: #2980b9; }
 }
 EOF
 
-
 echo "=========================================="
 echo "Creating f-t.js ...."
 echo "=========================================="
 cat << 'EOF' > public/f-t.js
 let currentUser = "";
-let adminToken = "";
 const userSessionArea = document.getElementById("user-session-area");
 const messageInput = document.getElementById("meg");
 const sendBtn = document.getElementById("Send");
@@ -258,7 +280,8 @@ document.getElementById("adminPortalBtn").addEventListener("click", () => {
   })
   .then(res => {
     if(res.ok) {
-      adminToken = passwordInput; // Cache token globally contextually for administrative actions
+      // FIX: Bind securely directly onto global window object state space context cleanly
+      window.adminToken = passwordInput; 
       return res.text();
     }
     throw new Error("Access Denied!");
@@ -350,11 +373,9 @@ sendBtn.addEventListener("click", () => {
 document.getElementById("addUserBtn").addEventListener("click", handleUserCreation);
 EOF
 
-
 echo "=========================================="
 echo "Creating Admin Panel page OUTSIDE public folder ....."
 echo "=========================================="
-# Written directly to root directory to isolate file completely with embedded CSS layout
 cat << 'EOF' > admin.html
 <!DOCTYPE html>
 <html lang="en">
@@ -362,134 +383,43 @@ cat << 'EOF' > admin.html
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard</title>
-  
   <style type="text/css">
-    * { 
-      box-sizing: border-box; 
-      margin: 0; 
-      padding: 0; 
-    }
-    
-    body { 
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-      padding: 20px; 
-      background: #f4f6f9; 
-      color: #333;
-    }
-    
-    h1 { 
-      text-align: center; 
-      margin: 20px 0; 
-      color: #2c3e50;
-    }
-    
-    hr {
-      border: 0;
-      height: 1px;
-      background: #ddd;
-      margin: 20px 0;
-    }
-    
-    #db-presence-list { 
-      margin: 15px 0; 
-      font-weight: bold; 
-    }
-    
-    #chat-box { 
-      min-height: 200px; 
-      max-height: 400px; 
-      overflow-y: auto; 
-      background: white; 
-      border: 2px solid #e2e8f0; 
-      padding: 15px; 
-      border-radius: 8px;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
-      margin-bottom: 20px;
-    }
-    
-    .admin-section {
-      display: flex; 
-      flex-wrap: wrap; 
-      gap: 15px; 
-      justify-content: center;
-      margin-bottom: 20px;
-    }
-    
-    .btn {
-      padding: 12px 24px; 
-      color: white; 
-      border: none; 
-      border-radius: 6px; 
-      cursor: pointer; 
-      font-weight: bold;
-      transition: background 0.2s ease, transform 0.1s ease;
-    }
-    
-    .btn:active {
-      transform: scale(0.98);
-    }
-    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background: #f4f6f9; color: #333;}
+    h1 { text-align: center; margin: 20px 0; color: #2c3e50;}
+    hr { border: 0; height: 1px; background: #ddd; margin: 20px 0; }
+    #db-presence-list { margin: 15px 0; font-weight: bold; }
+    #chat-box { min-height: 200px; max-height: 400px; overflow-y: auto; background: white; border: 2px solid #e2e8f0; padding: 15px; border-radius: 8px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px;}
+    .admin-section { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-bottom: 20px; }
+    .btn { padding: 12px 24px; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.2s ease, transform 0.1s ease; }
+    .btn:active { transform: scale(0.98); }
     .btn-danger-primary { background-color: #c0392b; }
     .btn-danger-primary:hover { background-color: #a93226; }
-    
     .btn-danger-secondary { background-color: #e74c3c; }
     .btn-danger-secondary:hover { background-color: #cd6155; }
-    
-    .btn-exit {
-      width: 100%;
-      padding: 15px;
-      font-size: 1.1rem;
-      background-color: #7f8c8d;
-    }
+    .btn-exit { width: 100%; padding: 15px; font-size: 1.1rem; background-color: #7f8c8d; }
     .btn-exit:hover { background-color: #95a5a6; }
-
-    @keyframes colorShift {
-      0% { border-color: #27ae60; }
-      50% { border-color: #8e44ad; }
-      100% { border-color: #c0392b; }
-    }
-    
-    .backBtn-container { 
-      padding: 5px;
-      border: 3px solid #27ae60;
-      border-radius: 8px;
-      animation: colorShift 4s ease infinite; 
-    }
-
-    /* Responsive scaling definitions */
-    @media (max-width: 768px) {
-      body { font-size: 16px; padding: 15px; }
-      h1 { font-size: 28px; }
-      .btn { width: 100%; padding: 15px; font-size: 18px; }
-    }
-    
-    @media (min-width: 768px) {
-      body { font-size: 18px; max-width: 900px; margin: 0 auto; }
-      h1 { font-size: 42px; }
-      .btn { min-width: 200px; font-size: 18px; }
-    }
+    @keyframes colorShift { 0% { border-color: #27ae60; } 50% { border-color: #8e44ad; } 100% { border-color: #c0392b; } }
+    .backBtn-container { padding: 5px; border: 3px solid #27ae60; border-radius: 8px; animation: colorShift 4s ease infinite; }
+    @media (max-width: 768px) { body { font-size: 16px; padding: 15px; } h1 { font-size: 28px; } .btn { width: 100%; padding: 15px; font-size: 18px; } }
+    @media (min-width: 768px) { body { font-size: 18px; max-width: 900px; margin: 0 auto; } h1 { font-size: 42px; } .btn { min-width: 200px; font-size: 18px; } }
   </style>
 </head>
 <body>
   <hr>
   <h1>Admin Management Suite</h1>
   <hr>
-  
   <div id="db-presence-list">Logged in users: <span style="color:#2980b9;" id="presence">loading...</span></div>
-  
   <h3>Live Chat Log Database:</h3>
   <div id="chat-box"></div>
-  
   <div class="admin-section">
     <button type="button" id="clearChatsBtn" class="btn btn-danger-primary">Clear Chat Logs</button>
     <button type="button" id="clearUsersBtn" class="btn btn-danger-secondary">Clear Online Users</button>
   </div>
-  
   <hr>
   <div class="backBtn-container">
     <button type="button" onclick="window.location.reload();" class="btn btn-exit">Exit Panel / Go Home</button>
   </div>
-
   <script type="text/javascript" charset="utf-8">
     const token = window.adminToken; 
     const chatBox = document.getElementById("chat-box");
@@ -551,17 +481,17 @@ cat << 'EOF' > admin.html
 </html>
 EOF
 
-
-
 echo "=========================================="
 echo "Creating LocalHost Command ....."
 echo "=========================================="
 cat << 'EOF' > $PREFIX/bin/Lstart
 #!/bin/bash
+# Automatically spin up the DB daemon if it isn't running before turning on node server
+pgrep mysqld > /dev/null || mysqld_safe --datadir=${IS_AM_NOT_ROOT:+$PREFIX/var/lib/mysql} 2>&1 >/dev/null &
+sleep 2
 node server.js
 EOF
 chmod +x $PREFIX/bin/Lstart
-echo "=========================================="
 
 echo "=========================================="
 echo "Installing NGROK ...."
@@ -570,7 +500,6 @@ cd $HOME
 wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-arm64.tgz
 tar -xvzf ngrok-v3-stable-linux-arm64.tgz
 chmod +x ngrok
-
 
 echo "==========================="
 echo "--- Ngrok Configuration ---"
@@ -590,15 +519,14 @@ tunnels:
   webapp:
     proto: http
     addr: $USER_PORT
-    url: $USER_DOMAIN
+    domain: $USER_DOMAIN
 EOF
 
 mv ngrok $PREFIX/bin/
 echo "ngrok start webapp" > $PREFIX/bin/Pstart
 chmod +x $PREFIX/bin/Pstart
-echo "=========================================="
 
-# 10. Create the Master Runner (server)
+# Create the Master Runner
 cat << 'EOF' > $PREFIX/bin/server
 #!/bin/bash
 SESSION="web_server"
@@ -615,6 +543,3 @@ chmod +x $PREFIX/bin/server
 echo "=================================================="
 echo "Setup complete! Type 'server' to start everything."
 echo "=================================================="
-echo "-----------You have to install mariadb!-----------"
-echo "=================================================="
-echo "Note:- you have to remmenber pass which you add here"
