@@ -95,8 +95,14 @@
   <h2>Use following commands to create database and required tables:-</h2>
   
   <ol>
-    <li>CREATE DATABASE friends_talk;</li>
-    <li>USE friends_talk;</li>
+    <li><code>
+      CREATE DATABASE friends_talk;
+    </code>
+    </li>
+    <li><code>
+      USE friends_talk;
+    </code>
+    </li>
     <li>
     CREATE TABLE users (
     username VARCHAR(50) PRIMARY KEY,
