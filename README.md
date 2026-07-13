@@ -14,7 +14,7 @@
 <section>
   <h2>Example images:-</h2>
   <figure>
-    <img src="index.jpg" alt="Home page of Friends-Talk" />
+    <img src="Index.jpg" alt="Home page of Friends-Talk" />
     <figcaption>
       This is example page of Friends-Talk home page and how its look after installation.
     </figcaption>
