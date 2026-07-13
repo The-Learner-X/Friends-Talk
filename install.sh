@@ -6,7 +6,7 @@ echo "=========================================="
 apt update && apt upgrade -y
 pkg install nodejs tmux wget proot fastfetch mariadb -y 
 
-cat << 'EOF' > /data/data/com.termux/files/usr/etc/bash.bashrc
+cat << 'EOF' >> /data/data/com.termux/files/usr/etc/bash.bashrc
 clear
 fastfetch
 EOF
@@ -489,7 +489,7 @@ cat << 'EOF' > $PREFIX/bin/Lstart
 # Automatically spin up the DB daemon if it isn't running before turning on node server
 pgrep mysqld > /dev/null || mysqld_safe --datadir=${IS_AM_NOT_ROOT:+$PREFIX/var/lib/mysql} 2>&1 >/dev/null &
 sleep 2
-node server.js
+node /Friends-Talk/server.js
 EOF
 chmod +x $PREFIX/bin/Lstart
 
