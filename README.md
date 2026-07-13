@@ -95,28 +95,34 @@
   <h2>Use following commands to create database and required tables:-</h2>
   
   <ol>
-    <li><code>
+    <li>
+  <code>
       CREATE DATABASE friends_talk;
-    </code>
-    </li>
-    <li><code>
-      USE friends_talk;
-    </code>
+  </code>
     </li>
     <li>
+  <code>
+      USE friends_talk;
+  </code>
+    </li>
+    <li>
+  <code>
     CREATE TABLE users (
     username VARCHAR(50) PRIMARY KEY,
     status VARCHAR(20) DEFAULT 'online',
     last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     );
-    </li>
+  </code>  
+  </li>
     <li>
+  <code>
     CREATE TABLE chat_logs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50),
     message TEXT,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
+  </code>
     </li>
   </ol>
   
