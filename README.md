@@ -85,13 +85,12 @@ table{
   <h2>Mariadb Installation:-</h2>
   <p>Mariadb is pre installed by this Repo setup, just you have to set manualy same password and react on qu</p>
   <center>
-  <table border="3">
     
+  <table border="3">
     <tr>
       <th>check it, is it installed</th>
       <th>1) mariadb-install-db</th>
     </tr>
-    
     <tr>
       <th>socket connection</th>
       <th>2) mysqld --unix-socket=off</th>
@@ -103,8 +102,8 @@ table{
       <th>mariadb setup</th>
       <th>3) mariadb-secure-installation</th>
     </tr>
-    
   </table>
+  
   </center>
   <h2>Use following commands to create database and required tables:-</h2>
   
@@ -134,7 +133,6 @@ table{
   <h2>Commands you can use to start:-</h2>
   <center>
   <table border="3">
-    
     <tr>
       <th>to start</th>
       <th>Command</th>
@@ -148,7 +146,6 @@ table{
       <th>mysqld_safe &</th>
       <th>mariadb -u root -p </th>
     </tr>
-    
   </table>
   </center>
 </section>
