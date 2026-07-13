@@ -129,8 +129,11 @@
       <th>server</th>
     </tr>
     <tr>
-      <th>mariadb</th>
+      <th rowspan="2">mariadb</th>
       <th>mysqld_safe &</th>
+    </tr>
+    <tr>
+      <th></th>
       <th>mariadb -u root -p </th>
     </tr>
   </table>
