@@ -37,42 +37,6 @@ ADMIN_PASSWORD="$ADMIN_PASS"
 EOF
 
 echo "=========================================="
-echo "Initializing MariaDB & Creating Schema ...."
-echo "=========================================="
-# Initialize MariaDB data directories if they don't exist
-mysql_install_db
-
-# Boot up database daemon temporarily in background to apply password & schema configurations
-mysqld_safe --datadir=${IS_AM_NOT_ROOT:+$PREFIX/var/lib/mysql} 2>&1 >/dev/null &
-PID=$!
-sleep 4
-
-# Secure root password and build the necessary table architecture layout automatically
-mysql -u root <<EOSQL
-ALTER USER 'root'@'localhost' IDENTIFIED BY '$DB_PASS';
-CREATE DATABASE IF NOT EXISTS friends_talk;
-USE friends_talk;
-
-CREATE TABLE IF NOT EXISTS users (
-  username VARCHAR(50) PRIMARY KEY,
-  status VARCHAR(20) DEFAULT 'offline',
-  last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS chat_logs (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  username VARCHAR(50),
-  message TEXT,
-  timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-FLUSH PRIVILEGES;
-EOSQL
-
-# Kill the temporary background SQL process gracefully
-kill $PID
-sleep 2
-
-echo "=========================================="
 echo "Creating server.js (Secure Routing) ....."
 echo "=========================================="
 cat << 'EOF' > server.js
