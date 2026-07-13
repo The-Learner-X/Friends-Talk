@@ -70,7 +70,7 @@
   </center>
   
   <h2>Mariadb Installation:-</h2>
-  <p>Mariadb is pre installed by this Repo setup, just you have to set manualy same password and react on qu</p>
+  <p>Go to $HOME</p>
   <center>
     
   <table border="3">
@@ -150,3 +150,5 @@
   </table>
   </center>
 </section>
+
+#termux #linux #fun
