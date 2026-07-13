@@ -142,7 +142,7 @@
     </tr>
     <tr>
       <th rowspan="2">mariadb</th>
-      <th>mysqld_safe &</th>
+      <th>mysqld_safe & (After this CMD hit enter)</th>
     </tr>
     <tr>
       <th>mariadb -u root -p </th>
