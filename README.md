@@ -133,7 +133,6 @@
       <th>mysqld_safe &</th>
     </tr>
     <tr>
-      <th></th>
       <th>mariadb -u root -p </th>
     </tr>
   </table>
