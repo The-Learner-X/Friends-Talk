@@ -95,7 +95,7 @@
   <h2>Use following commands to create database and required tables:-</h2>
   
   <ol>
-    <li>
+    <li style="background: purple;">
 <code>
       CREATE DATABASE friends_talk;
 </code>
