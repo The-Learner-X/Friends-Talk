@@ -1,17 +1,4 @@
 # Friends-Talk
-<style type="text/css">
-
-img{
-  width: 50%;
-  height: 50%;
-}
-
-table{
-  text-align: center;
-}
-  
-</style>
-
 <!--- Short Information --->
 <main>
 <section>
