@@ -60,29 +60,26 @@ table{
   <h2>Installation Proccess:-</h2>
   
   <center>
-  <table border="3">
     
+  <table border="3">
     <tr>
       <th>Install Repository</th>
       <th>git clone https://github.com/The-Learner-X/Friends-Talk.git</th>
     </tr>
-    
     <tr>
       <th>change directory</th>
       <th>cd Friends-Talk</th>
     </tr>
-    
     <tr>
       <th>Setup</th>
       <th>bash install.sh</th>
     </tr>
-    
     <tr>
       <th>Start</th>
       <th>CMD:- server</th>
     </tr>
-    
   </table>
+  
   </center>
   
   <h2>Mariadb Installation:-</h2>
