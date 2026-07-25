@@ -47,7 +47,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 const db = mysql.createConnection({
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '', // Reads from .env file or default empty
+  password: process.env.DB_PASSWORD || 'mlp0', // Reads from .env file or default empty
   database: process.env.DB_NAME || 'friends_talk'
 });
 
