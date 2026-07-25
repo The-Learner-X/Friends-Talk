@@ -6,7 +6,6 @@ clear
 fastfetch
 EOF
 
-
 # --- Password Setup Prompt ---
 echo "=========================================="
 echo "      SECURE CHAT SERVER SETUP            "
@@ -22,14 +21,14 @@ EOF
 
 
 # --- Create and step into correct project folder structural hierarchy ---
-mkdir -p $HOME/Friends-Talk/public
-cd $HOME/Friends-Talk
+mkdir -p /data/data/com.termux/files/home/Friends-Talk/public
+cd /data/data/com.termux/files/home/Friends-Talk
 
 echo "=========================================="
 echo "Initialize Node.js and Install Dependencies ......"
 echo "=========================================="
 npm init -y
-npm i express dotenv sql-y
+npm i express dotenv mysql2 -9-y
 
 
 echo "=========================================="
