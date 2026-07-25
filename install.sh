@@ -1,24 +1,10 @@
 apt update && apt upgrade -y
-pkg install nodejs tmux wget proot fastfetch mariadb -y 
+pkg install nodejs tmux wget proot fastfetch -y 
 
 cat << 'EOF' >> /data/data/com.termux/files/usr/etc/bash.bashrc
 clear
 fastfetch
 EOF
-
-# --- Password Setup Prompt ---
-echo "=========================================="
-echo "      SECURE CHAT SERVER SETUP            "
-echo "=========================================="
-read -p "Set your Termux MariaDB Database Password: " DB_PASS
-echo "=========================================="
-
-
-# Create the hidden environment file
-cat << EOF > .env
-DB_PASSWORD="$DB_PASS"
-EOF
-
 
 # --- Create and step into correct project folder structural hierarchy ---
 mkdir -p /data/data/com.termux/files/home/Friends-Talk/public
@@ -31,11 +17,23 @@ npm init -y
 npm i express dotenv mysql2 -y
 
 
+# --- Password Setup Prompt ---
+echo "=========================================="
+echo "      SECURE CHAT SERVER SETUP            "
+echo "=========================================="
+read -p "Set your Termux MariaDB Database Password: " DB_PASS
+echo "=========================================="
+
+# Create the hidden environment file
+cat << EOF > .env
+DB_PASSWORD="$DB_PASS"
+EOF
+
 echo "=========================================="
 echo "Creating index.js (Secure Routing) ....."
 echo "=========================================="
 cat << 'EOF' > index.js
-
+require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2');
 const path = require('path');
@@ -47,10 +45,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // --- MariaDB Connection ---
 const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'server.js', // Your MariaDB password
-  database: 'friends_talk'
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || '', // Reads from .env file or default empty
+  database: process.env.DB_NAME || 'friends_talk'
 });
 
 db.connect((err) => {
@@ -63,21 +61,10 @@ db.connect((err) => {
 
 // Route for default home page
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'friends-talk.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // --- Admin Endpoints ---
-app.post('/verify-admin', (req, res) => {
-  const { password } = req.body;
-  const SECRET_ADMIN_PASSWORD = 'server.js';
-
-  if (password === SECRET_ADMIN_PASSWORD) {
-    res.json({ success: true });
-  } else {
-    res.json({ success: false });
-  }
-});
-
 app.post('/clear-chats', (req, res) => {
   const query = "DELETE FROM chat_logs";
   db.query(query, (err, result) => {
@@ -144,8 +131,9 @@ app.post('/update-html', (req, res) => {
 });
 
 // Start listening on Port 3000
-app.listen(3000, () => {
-  console.log('Database server running flawlessly on http://localhost:3000');
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Database server running flawlessly on http://localhost:${PORT}`);
 });
 
 EOF
