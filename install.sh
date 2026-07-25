@@ -14,7 +14,7 @@ read -p "Set your Termux MariaDB Database Password: " DB_PASS
 echo "=========================================="
 
 # Create the hidden environment file
-cat << EOF >> .env
+cat << EOF > .env
 DB_PASSWORD="$DB_PASS"
 EOF
 
