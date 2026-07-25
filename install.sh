@@ -28,7 +28,7 @@ echo "=========================================="
 echo "Initialize Node.js and Install Dependencies ......"
 echo "=========================================="
 npm init -y
-npm i express dotenv mysql2 -9-y
+npm i express dotenv mysql2 -y
 
 
 echo "=========================================="
