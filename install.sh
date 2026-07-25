@@ -1,4 +1,4 @@
-apt update && apt upgrade -y
+Apt update && apt upgrade -y
 pkg install nodejs tmux wget proot fastfetch -y 
 
 cat << 'EOF' >> /data/data/com.termux/files/usr/etc/bash.bashrc
@@ -11,12 +11,15 @@ echo "=========================================="
 echo "      SECURE CHAT SERVER SETUP            "
 echo "=========================================="
 read -p "Set your Termux MariaDB Database Password: " DB_PASS
+# Remove any accidental trailing or leading spaces
+DB_PASS=$(echo "$DB_PASS" | xargs)
 echo "=========================================="
 
-# Create the hidden environment file
+# Create the hidden environment file cleanly
 cat << EOF > .env
-DB_PASSWORD="$DB_PASS"
+DB_PASSWORD=${DB_PASS}
 EOF
+
 
 # --- Create and step into correct project folder structural hierarchy ---
 mkdir -p /data/data/com.termux/files/home/Friends-Talk/public
@@ -137,6 +140,7 @@ app.listen(PORT, () => {
 
 EOF
 
+# index.html
 
 echo "=========================================="
 echo "Creating frontend codes (index.html) ...."
@@ -148,48 +152,77 @@ cat << 'EOF' > public/index.html
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Friends Talk</title>
+  <title>Document</title>
   
   <link rel="stylesheet" href="friends.css" title="Looks" type="text/css" />
   
 </head>
 <body>
   
+  <script type="text/javascript">
+
+  </script>
+  
   <main>
-    <div class="circle"></div>
-    <div class="circle"></div>
-    <div class="circle"></div>
-    <div class="circle"></div>
-    <div class="circle"></div>
-    <div class="circle"></div>
-    <div class="circle"></div>
-    <div class="circle"></div>
-    <div class="circle"></div>
-    <div class="circle"></div>
+    <div class="circle">
+      
+    </div>
+    <div class="circle">
+      
+    </div>
+    <div class="circle">
+      
+    </div>
+    <div class="circle">
+      
+    </div>
+    <div class="circle">
+      
+    </div>
+    <div class="circle">
+      
+    </div>
+    <div class="circle">
+      
+    </div>
+    <div class="circle">
+      
+    </div>
+    <div class="circle">
+      
+    </div>
+    <div class="circle">
+      
+    </div>
   </main>
   
   <section class="centerBody">
     <div class="page">
       
       <section id="userSection">
-        Create User: <input type="text" name="userName" id="userName" placeholder="Enter your name" />
-        <button id="createUser">Create User</button>
+      Create User:- <input type="text" name="userName" id="userName" placeholder="Enter your name" />
+      <button id="createUser">Create User</button>
       </section>
       
       <hr>
       <section id="onlineSection">
-        Users Online: <span> <!-- Created user names here --> </span>
+      User's Online:- <span> <!-- Created user names here --> </span>
       </section>
       
       <hr>
-      <div id="chat-box"></div>
+        <div id="chat-box">
+          
+        </div>
       <hr>
       
       <section id="messege">
-        <textarea name="typeMessege" id="typeMessege" cols="30" rows="10" placeholder="Type your message..."></textarea>
+        
+        <textarea name="typeMessege" id="typeMessege" cols="30" rows="10"></textarea>
+        
         <div id="align">
-          <button id="send">Send Message</button>
+        <button id="send">Send Messege</button>
         </div>
+        
       </section>
       
     </div>
@@ -200,25 +233,28 @@ cat << 'EOF' > public/index.html
 </html>
 EOF
 
+# friends.css
 
 echo "=========================================="
-echo "Creating updated friends.css ...."
+echo "Creating friends.css ...."
 echo "=========================================="
 cat << 'EOF' > public/friends.css
-@media (max-height: 1100px) {
-  body {
+
+
+@media (max-height: 1100px ) {
+  
+  body{
     padding: 5px;
     margin: 0;
   }
   
-  main {
+  main{
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     overflow-y: auto;
     box-shadow: inset 0px 0px 200px black;
   }
-  
-  .circle {
+  .circle{
     width: 100px;
     height: 100px;
     margin: 10px;
@@ -226,116 +262,119 @@ cat << 'EOF' > public/friends.css
     background: rgb(200, 180, 100);
   }
   
-  .centerBody {
+  .centerBody{
     width: 100%;
     height: 800px;
     box-shadow: inset 0px 0px 200px red;
   }
   
-  #userSection {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  #userSection{
+    display: grid;
+    grid-template-columns: repeat(2);
     text-align: center;
-    font-size: 24px;
-    gap: 10px;
+    font-size: 33px;
   }
   
-  #userName {
-    height: 40px;
-    font-size: 20px;
-    padding: 0 15px;
-    margin: 10px;
-    background-color: #ffffff;
-    border: 2px solid #cbd5e0;
-    border-radius: 25px;
-    color: #2d3748;
+  #userName{
+    
   }
   
-  #userName:hover {
-    box-shadow: 0px 0px 20px red;
+  #userName:hover{
+    box-shadow: 0px 0px 100px red;
   }
   
-  button {
-    height: 45px;
+  button{
+    height: 50px;
     border-radius: 50px;
-    width: 200px;
-    font-size: 18px;
+    width: 250px;
+    font-size: 30px;
   }
   
-  #typeMessege {
+  #typeMessege{
     width: 100%;
-    font-size: 16px;
-    padding: 10px;
+    font-size: 15px;
   }
   
   #chat-box {
-    border: 2px solid #e2e8f0;
-    padding: 15px;
-    margin: 15px 0;
-    height: 300px;
-    max-height: 400px;
-    overflow-y: auto;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+  border: 2px solid #e2e8f0;
+  padding: 15px;
+  margin: 15px;
+  height: 300px;
+  max-height: 400px;
+  overflow-y: auto;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
   }
  
-  #onlineSection {
-    margin: 10px;
+ #onlineSection{
+   margin: 10px;
   }
  
-  #align {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    margin-top: 10px;
+ #align{
+   display: flex;
+   justify-content: end;
+   align-items: end;
   }
  
-  #createUser {
-    box-shadow: 0px 0px 10px red;
-    border: 3px solid green;
+ #createUser{
+   margin-left: 30px;
+   box-shadow: 0px 0px 10px red;
+   border-top-width: 5px;
+   border-bottom-width: 5px;
+   border-left-width: 5px;
+   border-right-width: 5px;
+   border-color: green;
   }
  
-  #createUser:hover {
-    background: linear-gradient(
-      45deg,
-      rgb(251, 94, 51),
-      rgb(192, 93, 251),
-      rgb(180, 40, 200)
-    );
-    box-shadow: 0px 0px 10px black;
+ #createUser:hover{
+   background: linear-gradient(
+   45deg,
+   rgb(251, 94, 51),
+   rgb(192, 93, 251),
+   rgb(180, 40, 200)
+   );
+   box-shadow: 0px 0px 10px black;
   }
  
-  #send {
-    box-shadow: 0px 0px 15px black;
-    border: 3px solid #2d3748;
+ #send{
+   box-shadow: 0px 0px 15px black;
+   border-top-width: 5px;
+   border-bottom-width: 5px;
+   border-left-width: 5px;
+   border-right-width: 5px;
   }
  
-  #send:hover {
-    border-color: green;
-    box-shadow: 0px 0px 15px green;
+ #send:hover{
+   border-color: green;
+   box-shadow: 0px 0px 15px green;
   }
  
-  #messege {
-    margin: 10px 0;
-  }
+ #userName{
+  height: 30px;
+  font-size: 28px;
+  margin: 10px;
+  border-radius: 0px 50px 50px 0px;
+ }
+ #messege{
+   margin: 10px;
+ }
 }
 
-@media (min-height: 1100px) {
-  body {
+@media (min-height: 1100px ) {
+  
+  body{
     padding: 5px;
     margin: 0;
   }
   
-  main {
+  main{
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     overflow-y: auto;
     box-shadow: inset 0px 0px 200px black;
   }
-  
-  .circle {
+  .circle{
     width: 250px;
     height: 250px;
     margin: 10px;
@@ -343,104 +382,106 @@ cat << 'EOF' > public/friends.css
     background: rgb(200, 180, 100);
   }
   
-  .centerBody {
+  .centerBody{
     width: 100%;
     height: 1600px;
     box-shadow: inset 0px 0px 200px red;
   }
   
-  #userSection {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  #userSection{
+    display: grid;
+    grid-template-columns: repeat(2);
     text-align: center;
-    font-size: 36px;
-    gap: 15px;
+    font-size: 55px;
   }
   
-  #userName {
-    height: 60px;
-    font-size: 30px;
-    padding: 0 20px;
+  #userName{
+    height: 80px;
+    font-size: 53px;
     margin: 10px;
-    background-color: #ffffff;
-    border: 2px solid #cbd5e0;
-    border-radius: 30px;
-    color: #2d3748;
+    border-radius: 0px 50px 50px 0px;
   }
   
-  #userName:hover {
-    box-shadow: 0px 0px 50px red;
+  #userName:hover{
+    box-shadow: 0px 0px 100px red;
   }
   
-  button {
-    height: 60px;
+  button{
+    height: 70px;
     border-radius: 50px;
-    width: 300px;
-    font-size: 28px;
+    width: 350px;
+    font-size: 53px;
   }
   
-  #typeMessege {
+  #typeMessege{
     width: 100%;
-    font-size: 28px;
-    padding: 10px;
+    font-size: 43px;
   }
   
   #chat-box {
-    border: 2px solid #e2e8f0;
-    padding: 10px;
-    margin: 15px 0;
-    height: 600px;
-    max-height: 600px;
-    overflow-y: auto;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.07);
-    font-size: 28px;
+  border: 2px solid #e2e8f0;
+  padding: 5px;
+  margin: 15px;
+  height: 600px;
+  max-height: 600px;
+  overflow-y: auto;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.07);
+  font-size: 43px;
   }
  
-  #onlineSection {
-    margin: 10px;
-    font-size: 36px;
+ #onlineSection{
+   margin: 10px;
+   font-size: 53px;
   }
  
-  #align {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    margin-top: 10px;
+ #align{
+   display: flex;
+   justify-content: end;
+   align-items: end;
   }
  
-  #createUser {
-    box-shadow: 0px 0px 10px red;
-    border: 3px solid green;
+ #createUser{
+   margin-left: 30px;
+   box-shadow: 0px 0px 10px red;
+   border-top-width: 5px;
+   border-bottom-width: 5px;
+   border-left-width: 5px;
+   border-right-width: 5px;
+   border-color: green;
   }
  
-  #createUser:hover {
-    background: linear-gradient(
-      45deg,
-      rgb(251, 94, 51),
-      rgb(192, 93, 251),
-      rgb(180, 40, 200)
-    );
-    box-shadow: 0px 0px 10px black;
+ #createUser:hover{
+   background: linear-gradient(
+   45deg,
+   rgb(251, 94, 51),
+   rgb(192, 93, 251),
+   rgb(180, 40, 200)
+   );
+   box-shadow: 0px 0px 10px black;
   }
  
-  #send {
-    box-shadow: 0px 0px 15px black;
-    border: 3px solid #2d3748;
-    width: 350px;
+ #send{
+   box-shadow: 0px 0px 15px black;
+   border-top-width: 5px;
+   border-bottom-width: 5px;
+   border-left-width: 5px;
+   border-right-width: 5px;
+   width: 450px;
   }
  
-  #send:hover {
-    border-color: green;
-    box-shadow: 0px 0px 15px green;
+ #send:hover{
+   border-color: green;
+   box-shadow: 0px 0px 15px green;
   }
- 
-  #messege {
-    margin: 10px 0;
-  }
+  
+ #messege{
+   margin: 10px;
+ }
+
 }
+
 EOF
 
 
@@ -689,4 +730,4 @@ chmod +x $PREFIX/bin/server
 echo "=================================================="
 echo "Setup complete! Type 'server' to start everything."
 echo "=================================================="
-echo "------- You have to install Mariadb manually ------"
+echo "------- You have to install Mariadb manualy ------"
