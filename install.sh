@@ -6,17 +6,6 @@ clear
 fastfetch
 EOF
 
-# --- Create and step into correct project folder structural hierarchy ---
-mkdir -p /data/data/com.termux/files/home/Friends-Talk/public
-cd /data/data/com.termux/files/home/Friends-Talk
-
-echo "=========================================="
-echo "Initialize Node.js and Install Dependencies ......"
-echo "=========================================="
-npm init -y
-npm i express dotenv mysql2 -y
-
-
 # --- Password Setup Prompt ---
 echo "=========================================="
 echo "      SECURE CHAT SERVER SETUP            "
@@ -28,6 +17,16 @@ echo "=========================================="
 cat << EOF > .env
 DB_PASSWORD="$DB_PASS"
 EOF
+
+# --- Create and step into correct project folder structural hierarchy ---
+mkdir -p /data/data/com.termux/files/home/Friends-Talk/public
+cd /data/data/com.termux/files/home/Friends-Talk
+
+echo "=========================================="
+echo "Initialize Node.js and Install Dependencies ......"
+echo "=========================================="
+npm init -y
+npm i express dotenv mysql2 -y
 
 echo "=========================================="
 echo "Creating index.js (Secure Routing) ....."
@@ -45,10 +44,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // --- MariaDB Connection ---
 const db = mysql.createConnection({
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
+  host:'localhost',
+  user:'root',
   password: process.env.DB_PASSWORD || 'mlp0', // Reads from .env file or default empty
-  database: process.env.DB_NAME || 'friends_talk'
+  database:'friends_talk'
 });
 
 db.connect((err) => {
