@@ -1,25 +1,10 @@
-Apt update && apt upgrade -y
+apt update && apt upgrade -y
 pkg install nodejs tmux wget proot fastfetch -y 
 
 cat << 'EOF' >> /data/data/com.termux/files/usr/etc/bash.bashrc
 clear
 fastfetch
 EOF
-
-# --- Password Setup Prompt ---
-echo "=========================================="
-echo "      SECURE CHAT SERVER SETUP            "
-echo "=========================================="
-read -p "Set your Termux MariaDB Database Password: " DB_PASS
-# Remove any accidental trailing or leading spaces
-DB_PASS=$(echo "$DB_PASS" | xargs)
-echo "=========================================="
-
-# Create the hidden environment file cleanly
-cat << EOF > .env
-DB_PASSWORD=${DB_PASS}
-EOF
-
 
 # --- Create and step into correct project folder structural hierarchy ---
 mkdir -p /data/data/com.termux/files/home/Friends-Talk/public
@@ -28,8 +13,8 @@ cd /data/data/com.termux/files/home/Friends-Talk
 echo "=========================================="
 echo "Initialize Node.js and Install Dependencies ......"
 echo "=========================================="
-npm init -y
 npm i express dotenv mysql2 -y
+npm init -y
 
 echo "=========================================="
 echo "Creating index.js (Secure Routing) ....."
@@ -239,7 +224,6 @@ echo "=========================================="
 echo "Creating friends.css ...."
 echo "=========================================="
 cat << 'EOF' > public/friends.css
-
 
 @media (max-height: 1100px ) {
   
@@ -679,6 +663,9 @@ sleep 4
 node $HOME/Friends-Talk/index.js
 EOF
 chmod +x $PREFIX/bin/Lstart
+echo "=========================================="
+echo "CMD :- Lstart"
+echo "=========================================="
 
 echo "=========================================="
 echo "Installing NGROK ...."
@@ -712,6 +699,9 @@ EOF
 mv ngrok $PREFIX/bin/
 echo "ngrok start webapp" > $PREFIX/bin/Pstart
 chmod +x $PREFIX/bin/Pstart
+echo "=========================================="
+echo "Pstart"
+echo "=========================================="
 
 # Create the Master Runner
 cat << 'EOF' > $PREFIX/bin/server
@@ -726,6 +716,21 @@ tmux send-keys -t $SESSION:0.1 "Pstart" C-m
 tmux attach-session -t $SESSION
 EOF
 chmod +x $PREFIX/bin/server
+
+cd 
+
+# --- Password Setup Prompt ---
+echo "=========================================="
+echo "      SECURE CHAT SERVER SETUP            "
+echo "=========================================="
+read -p "Set your Termux MariaDB Database Password: " DB_PASS
+# Create the hidden environment file cleanly
+cat << EOF > .env
+DB_PASSWORD=${DB_PASS}
+EOF
+echo "=========================================="
+echo "$DB_PASS"
+echo "=========================================="
 
 echo "=================================================="
 echo "Setup complete! Type 'server' to start everything."
