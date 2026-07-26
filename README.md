@@ -142,7 +142,7 @@
     </tr>
     <tr>
       <th rowspan="2">mariadb</th>
-      <th>mariadbd --user-safe=root & (After this CMD hit enter)</th>
+      <th>mariadbd -user=root & / mariadbd-safe &(After this CMD hit enter)</th>
     </tr>
     <tr>
       <th>mariadb -u root -p </th>
