@@ -742,6 +742,12 @@ chmod +x $PREFIX/bin/server
 
 cd 
 
+# --Adding image to Friends-Talk/public---
+mv nature2.jpeg $HOME/Friends-Talk/public
+echo "=========================================="
+echo "Moving Nature2.jpeg successful"
+echo "=========================================="
+
 # --- Password Setup Prompt ---
 echo "=========================================="
 echo "      SECURE CHAT SERVER SETUP            "
