@@ -228,23 +228,9 @@ cat << 'EOF' > public/friends.css
 #userName {
   /* Ensure proper box rendering for inline elements */
   display: inline-block;
-
-  /* Set the background image */
-  background-image: url("nature2.jpeg");
-  background-size: cover;
-  background-position: center;
-
-  /* Clip the background to the text */
+  background-image: url('nature4.jpeg');
   -webkit-background-clip: text;
-  background-clip: text;
-
-  /* Fallback text color if clipping isn't supported */
-  color: #333; 
-
-  /* Makes the text transparent specifically for webkit/clipping */
-  -webkit-text-fill-color: transparent; 
-
-  /* Styling tip: thicker fonts show image patterns much better */
+  color: transparent;
   font-weight: bold;
 }
 
