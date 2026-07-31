@@ -1149,8 +1149,8 @@ echo "=========================================="
 echo "=========================================="
 echo "      SECURE CHAT SERVER SETUP            "
 echo "=========================================="
-read -p "Set your Termux MariaDB Database Password: "DB_PASS"
-read -p "Set your Admin Panel Password: "admin_pass"
+read -p "Set your Termux MariaDB Database Password: " DB_PASS
+read -p "Set your Admin Panel Password: " admin_pass
 # Create the hidden environment file cleanly
 cat << EOF > .env
 DB_PASSWORD=${DB_PASS}
