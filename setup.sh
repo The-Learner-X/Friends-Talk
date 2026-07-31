@@ -407,7 +407,7 @@ cat << 'EOF' > public/index.html
 <body>
   
   <nav class="navbar">
-    <div class="navLogo"><img src="nature3.jpeg" alt="nature theme" /></div>
+    <div class="navLogo"><img src="nature2.jpeg" alt="nature theme" /></div>
     <div class="navLinks">
       <a href="#home">Home</a>
       <a id="adminPortalBtn">Admin Panel</a>
@@ -1140,7 +1140,7 @@ EOF
 chmod +x $PREFIX/bin/server
 
 # --Adding image to Friends-Talk/public---
-mv nature3.jpeg $HOME/Friends-Talk/public
+mv nature2.jpeg $HOME/Friends-Talk/public
 echo "=========================================="
 echo "Moving Nature3.jpeg successful"
 echo "=========================================="
