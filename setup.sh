@@ -16,6 +16,192 @@ echo "=========================================="
 echo "Moving Nature3.jpeg successful"
 echo "=========================================="
 
+cat << 'EOF' > admin.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>History</title>
+  
+  <style type="text/css">
+    
+      h1{
+      text-align: center;
+      font-size: 60px;
+    }
+    
+    button{
+      text-align: center;
+      font-size: 20px;
+    }
+    
+    .COU{
+      background-color: #c0392b; 
+      color: white; 
+      padding: 8px 12px; 
+      border: none; 
+      border-radius: 4px; 
+      cursor: pointer;
+      width: 500px;
+      height: 100px;
+      font-size: 33px;
+    }
+    
+    .CCB{
+      background-color: #e74c3c; 
+      color: white; 
+      padding: 8px 12px; 
+      border: none; 
+      border-radius: 4px; 
+      cursor: pointer;
+      width: 500px;
+      height: 100px;
+      font-size: 33px;
+    }
+
+    #chat-box {
+      min-height: 150px;
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 15px;
+      border: 1px solid #ccc;
+      background: #f9f9f9;
+      border-radius: 8px;
+    }
+
+    #db-presence-list {
+      font-size: 24px;
+      margin: 15px 0;
+      font-weight: bold;
+    }
+    
+  </style>
+</head>
+<body>
+  
+  <button type="button" onclick="window.location.href='index.html'" style="padding: 10px 20px; margin-top: 10px; cursor: pointer;">← Back to Chat</button>
+  <hr>
+
+  <h1>Welcome Admin</h1>
+
+  <hr>
+
+  <div id="db-presence-list">Logined in usr = <span style="color:#2980b9;">loading...</span></div>
+
+  <h3>Live Chat Log:</h3>
+  <div id="chat-box"></div>
+
+  <hr>
+
+  <div class="admin-section" style="margin-top: 15px; display: flex; gap: 10px;">
+    <button type="button" id="clearChatsBtn" class="CCB">
+      Clear Chat Logs
+    </button>
+    <button type="button" id="clearUsersBtn" class="COU">
+      Clear Online Users
+    </button>
+  </div>
+
+  <hr>
+
+  <script type="text/javascript" charset="utf-8">
+    const chatBox = document.getElementById("chat-box");
+    const presenceList = document.getElementById("db-presence-list");
+
+    // --- Fetch & Render Chat Logs directly from MariaDB ---
+    function loadChatLogs() {
+      fetch('/get-messages')
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            chatBox.innerHTML = "";
+            if (data.logs.length === 0) {
+              chatBox.innerHTML = "<em style='color: #7f8c8d;'>No chat history found in database.</em>";
+              return;
+            }
+            data.logs.forEach(log => {
+              const messageElement = document.createElement("div");
+              messageElement.style.marginBottom = "10px";
+              messageElement.style.fontSize = "20px";
+              
+              messageElement.innerHTML = `
+                <strong style="color: #2980b9;">${log.username}</strong>: 
+                <div style="display:inline-block;">${log.message}</div>
+                <span style="color: #95a5a6; font-size: 0.85rem; margin-left: 6px;">(${log.time})</span>
+              `;
+              chatBox.appendChild(messageElement);
+            });
+            chatBox.scrollTop = chatBox.scrollHeight;
+          }
+        })
+        .catch(err => console.error("Error fetching logs for admin:", err));
+    }
+
+    // --- Fetch & Render Currently Logged-in Users list ---
+    function loadOnlineUsers() {
+      fetch('/get-online-users')
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            if (data.users.length > 0) {
+              presenceList.innerHTML = `Logined in usr = <span style="color:#2980b9;">${data.users.join(', ')}</span>`;
+            } else {
+              presenceList.innerHTML = `Logined in usr = <span style="color:#7f8c8d;">none</span>`;
+            }
+          }
+        })
+        .catch(err => console.error("Error fetching online users for admin:", err));
+    }
+
+    // --- Admin Database Clear Handlers ---
+
+    // Handle Button 1: Delete all chat entries
+    document.getElementById("clearChatsBtn").addEventListener("click", () => {
+      if (!confirm("Are you sure you want to clear the entire chat log history?")) return;
+
+      fetch('/clear-chats', { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            alert(data.message);
+            loadChatLogs(); // Instantly clears out the display view layout cleanly
+          }
+        })
+        .catch(err => console.error("Failed to clear chat log records:", err));
+    });
+
+    // Handle Button 2: Delete all registered online users
+    document.getElementById("clearUsersBtn").addEventListener("click", () => {
+      if (!confirm("Are you sure you want to drop all active logged-in profiles?")) return;
+
+      fetch('/clear-users', { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            alert(data.message);
+            loadOnlineUsers(); // Instantly update online tracker string layout
+          }
+        })
+        .catch(err => console.error("Failed to clear online database list:", err));
+    });
+
+    // --- Initial Auto-Load and live loop setup ---
+    loadChatLogs();
+    loadOnlineUsers();
+    
+    // Auto-refresh the admin panel dashboard state data every 2 seconds
+    setInterval(loadChatLogs, 2000);
+    setInterval(loadOnlineUsers, 2000);
+  </script>
+  
+</body>
+</html>
+
+EOF
+
 
 echo "=========================================="
 echo "Initialize Node.js and Install Dependencies ......"
@@ -893,194 +1079,6 @@ sendBtn.addEventListener("click", () => {
 
 // --- Direct Event Binding ---
 document.getElementById("addUserBtn").addEventListener("click", handleUserCreation);
-
-EOF
-
-cd ..
-
-cat << 'EOF' > admin.html
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>History</title>
-  
-  <style type="text/css">
-    
-      h1{
-      text-align: center;
-      font-size: 60px;
-    }
-    
-    button{
-      text-align: center;
-      font-size: 20px;
-    }
-    
-    .COU{
-      background-color: #c0392b; 
-      color: white; 
-      padding: 8px 12px; 
-      border: none; 
-      border-radius: 4px; 
-      cursor: pointer;
-      width: 500px;
-      height: 100px;
-      font-size: 33px;
-    }
-    
-    .CCB{
-      background-color: #e74c3c; 
-      color: white; 
-      padding: 8px 12px; 
-      border: none; 
-      border-radius: 4px; 
-      cursor: pointer;
-      width: 500px;
-      height: 100px;
-      font-size: 33px;
-    }
-
-    #chat-box {
-      min-height: 150px;
-      max-height: 400px;
-      overflow-y: auto;
-      padding: 15px;
-      border: 1px solid #ccc;
-      background: #f9f9f9;
-      border-radius: 8px;
-    }
-
-    #db-presence-list {
-      font-size: 24px;
-      margin: 15px 0;
-      font-weight: bold;
-    }
-    
-  </style>
-</head>
-<body>
-  
-  <button type="button" onclick="window.location.href='index.html'" style="padding: 10px 20px; margin-top: 10px; cursor: pointer;">← Back to Chat</button>
-  <hr>
-
-  <h1>Welcome Admin</h1>
-
-  <hr>
-
-  <div id="db-presence-list">Logined in usr = <span style="color:#2980b9;">loading...</span></div>
-
-  <h3>Live Chat Log:</h3>
-  <div id="chat-box"></div>
-
-  <hr>
-
-  <div class="admin-section" style="margin-top: 15px; display: flex; gap: 10px;">
-    <button type="button" id="clearChatsBtn" class="CCB">
-      Clear Chat Logs
-    </button>
-    <button type="button" id="clearUsersBtn" class="COU">
-      Clear Online Users
-    </button>
-  </div>
-
-  <hr>
-
-  <script type="text/javascript" charset="utf-8">
-    const chatBox = document.getElementById("chat-box");
-    const presenceList = document.getElementById("db-presence-list");
-
-    // --- Fetch & Render Chat Logs directly from MariaDB ---
-    function loadChatLogs() {
-      fetch('/get-messages')
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            chatBox.innerHTML = "";
-            if (data.logs.length === 0) {
-              chatBox.innerHTML = "<em style='color: #7f8c8d;'>No chat history found in database.</em>";
-              return;
-            }
-            data.logs.forEach(log => {
-              const messageElement = document.createElement("div");
-              messageElement.style.marginBottom = "10px";
-              messageElement.style.fontSize = "20px";
-              
-              messageElement.innerHTML = `
-                <strong style="color: #2980b9;">${log.username}</strong>: 
-                <div style="display:inline-block;">${log.message}</div>
-                <span style="color: #95a5a6; font-size: 0.85rem; margin-left: 6px;">(${log.time})</span>
-              `;
-              chatBox.appendChild(messageElement);
-            });
-            chatBox.scrollTop = chatBox.scrollHeight;
-          }
-        })
-        .catch(err => console.error("Error fetching logs for admin:", err));
-    }
-
-    // --- Fetch & Render Currently Logged-in Users list ---
-    function loadOnlineUsers() {
-      fetch('/get-online-users')
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            if (data.users.length > 0) {
-              presenceList.innerHTML = `Logined in usr = <span style="color:#2980b9;">${data.users.join(', ')}</span>`;
-            } else {
-              presenceList.innerHTML = `Logined in usr = <span style="color:#7f8c8d;">none</span>`;
-            }
-          }
-        })
-        .catch(err => console.error("Error fetching online users for admin:", err));
-    }
-
-    // --- Admin Database Clear Handlers ---
-
-    // Handle Button 1: Delete all chat entries
-    document.getElementById("clearChatsBtn").addEventListener("click", () => {
-      if (!confirm("Are you sure you want to clear the entire chat log history?")) return;
-
-      fetch('/clear-chats', { method: 'POST' })
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            alert(data.message);
-            loadChatLogs(); // Instantly clears out the display view layout cleanly
-          }
-        })
-        .catch(err => console.error("Failed to clear chat log records:", err));
-    });
-
-    // Handle Button 2: Delete all registered online users
-    document.getElementById("clearUsersBtn").addEventListener("click", () => {
-      if (!confirm("Are you sure you want to drop all active logged-in profiles?")) return;
-
-      fetch('/clear-users', { method: 'POST' })
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            alert(data.message);
-            loadOnlineUsers(); // Instantly update online tracker string layout
-          }
-        })
-        .catch(err => console.error("Failed to clear online database list:", err));
-    });
-
-    // --- Initial Auto-Load and live loop setup ---
-    loadChatLogs();
-    loadOnlineUsers();
-    
-    // Auto-refresh the admin panel dashboard state data every 2 seconds
-    setInterval(loadChatLogs, 2000);
-    setInterval(loadOnlineUsers, 2000);
-  </script>
-  
-</body>
-</html>
 
 EOF
 
