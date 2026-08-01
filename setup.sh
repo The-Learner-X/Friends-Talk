@@ -10,6 +10,13 @@ EOF
 mkdir -p /data/data/com.termux/files/home/Friends-Talk/public
 cd /data/data/com.termux/files/home/Friends-Talk
 
+# --Adding image to Friends-Talk/public---
+mv nature2.jpeg public
+echo "=========================================="
+echo "Moving Nature3.jpeg successful"
+echo "=========================================="
+
+
 echo "=========================================="
 echo "Initialize Node.js and Install Dependencies ......"
 echo "=========================================="
@@ -889,7 +896,7 @@ document.getElementById("addUserBtn").addEventListener("click", handleUserCreati
 
 EOF
 
-cd $HOME
+cd ..
 
 cat << 'EOF' > admin.html
 
@@ -1075,9 +1082,9 @@ cat << 'EOF' > admin.html
 </body>
 </html>
 
-
 EOF
 
+cd
 
 echo "=========================================="
 echo "Creating LocalHost Command ....."
@@ -1138,12 +1145,6 @@ tmux send-keys -t $SESSION:0.1 "Pstart" C-m
 tmux attach-session -t $SESSION
 EOF
 chmod +x $PREFIX/bin/server
-
-# --Adding image to Friends-Talk/public---
-mv nature2.jpeg $HOME/Friends-Talk/public
-echo "=========================================="
-echo "Moving Nature3.jpeg successful"
-echo "=========================================="
 
 # --- Password Setup Prompt ---
 echo "=========================================="
