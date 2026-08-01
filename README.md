@@ -59,7 +59,7 @@
     </tr>
     <tr>
       <th>Setup</th>
-      <th>bash install.sh</th>
+      <th>bash setup.sh</th>
     </tr>
     <tr>
       <th>Start</th>
